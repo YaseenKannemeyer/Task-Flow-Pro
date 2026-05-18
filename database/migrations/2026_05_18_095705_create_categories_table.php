@@ -22,6 +22,7 @@ return new class extends Migration
 
             $table->index('slug');
             $table->index('created_by');
+           
         });
     }
 
