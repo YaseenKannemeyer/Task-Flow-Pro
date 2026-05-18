@@ -28,7 +28,7 @@ Route::get('/', function () {
 // -----------------------------------------------------------------------
 // AUTHENTICATED + VERIFIED ROUTES
 // -----------------------------------------------------------------------
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardControllerAMY::class, 'index'])->name('dashboard');
