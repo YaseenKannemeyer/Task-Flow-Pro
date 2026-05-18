@@ -10,7 +10,7 @@ extends('layouts.app')
     {{-- Header + Create button --}}
     <div class="flex items-center justify-between mb-6">
         <h1 class="text-2xl font-bold text-gray-900">Tasks</h1>
-        @can('create', App\Models\TaskXYZ::class)
+        @can('create', App\Models\TaskAMY::class)
             <a href="{{ route('tasks.create') }}"
                class="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
                 + New Task

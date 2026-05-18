@@ -2,21 +2,21 @@
 
 namespace App\Providers;
 
-use App\Models\CategoryXYZ;
-use App\Models\TaskXYZ;
-use App\Policies\CategoryPolicyXYZ;
-use App\Policies\TaskPolicyXYZ;
+use App\Models\CategoryAMY;
+use App\Models\TaskAMY;
+use App\Policies\CategoryPolicyAMY;
+use App\Policies\TaskPolicyAMY;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
-class AuthServiceProviderXYZ extends ServiceProvider
+class AuthServiceProviderAMY extends ServiceProvider
 {
     /**
      * The model → policy map.
      */
     protected $policies = [
-        TaskXYZ::class     => TaskPolicyXYZ::class,
-        CategoryXYZ::class => CategoryPolicyXYZ::class,
+        TaskAMY::class     => TaskPolicyAMY::class,
+        CategoryAMY::class => CategoryPolicyAMY::class,
     ];
 
     public function boot(): void

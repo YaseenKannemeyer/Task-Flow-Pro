@@ -33,22 +33,22 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function role(): BelongsTo
     {
-        return $this->belongsTo(RoleXYZ::class, 'role_id');
+        return $this->belongsTo(RoleAMY::class, 'role_id');
     }
 
     public function createdTasks(): HasMany
     {
-        return $this->hasMany(TaskXYZ::class, 'created_by');
+        return $this->hasMany(TaskAMY::class, 'created_by');
     }
 
     public function assignedTasks(): HasMany
     {
-        return $this->hasMany(TaskXYZ::class, 'assigned_to');
+        return $this->hasMany(TaskAMY::class, 'assigned_to');
     }
 
     public function comments(): HasMany
     {
-        return $this->hasMany(TaskCommentXYZ::class, 'user_id');
+        return $this->hasMany(TaskCommentAMY::class, 'user_id');
     }
 
     // -----------------------------------------------------------------------
@@ -84,14 +84,14 @@ class User extends Authenticatable implements MustVerifyEmail
 
 
 // =============================================================================
-// FILE: app/Models/RoleXYZ.php
+// FILE: app/Models/RoleAMY.php
 // =============================================================================
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class RoleXYZ extends Model
+class RoleAMY extends Model
 {
     protected $table = 'roles';
 
