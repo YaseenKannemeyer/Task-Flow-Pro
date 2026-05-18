@@ -1,36 +1,55 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ config('app.name', 'TaskFlow') }} — @yield('title', 'Dashboard')</title>
+    {{-- Vite-compiled CSS/JS (no inline styles) --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('styles')
+</head>
+<body class="bg-gray-100 font-sans antialiased">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+    {{-- ----------------------- Navbar ----------------------- --}}
+    <x-navbar />
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <div class="flex">
+        {{-- ----------------------- Sidebar ----------------------- --}}
+        <x-sidebar />
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+        {{-- ----------------------- Main Content ----------------------- --}}
+        <main class="flex-1 p-6">
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
+            {{-- Breadcrumb --}}
+            @hasSection('breadcrumb')
+                <x-breadcrumb>
+                    @yield('breadcrumb')
+                </x-breadcrumb>
+            @endif
 
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
-        </div>
-    </body>
+            {{-- Flash Messages --}}
+            @if (session('success'))
+                <x-alert type="success" :message="session('success')" />
+            @endif
+            @if (session('error'))
+                <x-alert type="error" :message="session('error')" />
+            @endif
+            @if ($errors->any())
+                <x-alert type="error">
+                    <ul class="list-disc pl-5 text-sm">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </x-alert>
+            @endif
+
+            {{-- Page content --}}
+            @yield('content')
+        </main>
+    </div>
+
+    @stack('scripts')
+</body>
 </html>
