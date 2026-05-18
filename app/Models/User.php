@@ -2,96 +2,58 @@
 
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Notifications\Notifiable;
-
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
 
-    // -------------------------------------------------------------------
-    // MASS ASSIGNMENT
-    // -------------------------------------------------------------------
-
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'role_id',
+        'name', 'email', 'password',
+        'role_id', 'avatar', 'is_active', 'last_login_at',
     ];
 
-    protected $hidden = [
-        'password',
-        'remember_token',
+    protected $hidden = ['password', 'remember_token'];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'last_login_at'     => 'datetime',
+        'password'          => 'hashed',
+        'is_active'         => 'boolean',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
-
-    // -------------------------------------------------------------------
+    // -----------------------------------------------------------------------
     // RELATIONSHIPS
-    // -------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
-    /**
-     * Role of user
-     */
     public function role(): BelongsTo
     {
-        return $this->belongsTo(RoleAMY::class, 'role_id');
+        return $this->belongsTo(RoleXYZ::class, 'role_id');
     }
 
-    /**
-     * Tasks created by user
-     */
     public function createdTasks(): HasMany
     {
-        return $this->hasMany(TaskAMY::class, 'created_by');
+        return $this->hasMany(TaskXYZ::class, 'created_by');
     }
 
-    /**
-     * Tasks assigned to user
-     */
     public function assignedTasks(): HasMany
     {
-        return $this->hasMany(TaskAMY::class, 'assigned_to');
+        return $this->hasMany(TaskXYZ::class, 'assigned_to');
     }
 
-    /**
-     * Comments made by user
-     */
-    public function taskComments(): HasMany
+    public function comments(): HasMany
     {
-        return $this->hasMany(TaskCommentAMY::class, 'user_id');
+        return $this->hasMany(TaskCommentXYZ::class, 'user_id');
     }
 
-    /**
-     * Deadline reminders for user
-     */
-    public function reminders(): HasMany
-    {
-        return $this->hasMany(DeadlineReminderAMY::class, 'user_id');
-    }
-
-    /**
-     * Categories created by user
-     */
-    public function categories(): HasMany
-    {
-        return $this->hasMany(CategoryAMY::class, 'created_by');
-    }
-
-    // -------------------------------------------------------------------
-    // ROLE HELPERS (IMPORTANT FOR YOUR SYSTEM)
-    // -------------------------------------------------------------------
+    // -----------------------------------------------------------------------
+    // ROLE HELPERS
+    // -----------------------------------------------------------------------
 
     public function isAdmin(): bool
     {
@@ -108,17 +70,35 @@ class User extends Authenticatable
         return $this->role?->name === 'guest';
     }
 
-    // -------------------------------------------------------------------
-    // ACCESSORS
-    // -------------------------------------------------------------------
+    // -----------------------------------------------------------------------
+    // ACCESSOR
+    // -----------------------------------------------------------------------
 
-    public function getRoleNameAttribute(): ?string
+    /** Returns initials for avatar fallback */
+    public function getInitialsAttribute(): string
     {
-        return $this->role?->name;
+        $parts = explode(' ', $this->name);
+        return strtoupper(substr($parts[0], 0, 1) . (substr($parts[1] ?? '', 0, 1)));
     }
+}
 
-    public function getRoleDisplayAttribute(): ?string
+
+// =============================================================================
+// FILE: app/Models/RoleXYZ.php
+// =============================================================================
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class RoleXYZ extends Model
+{
+    protected $table = 'roles';
+
+    protected $fillable = ['name', 'display_name', 'description'];
+
+    public function users(): HasMany
     {
-        return $this->role?->display_name;
+        return $this->hasMany(User::class, 'role_id');
     }
 }

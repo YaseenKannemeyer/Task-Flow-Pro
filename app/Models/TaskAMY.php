@@ -5,11 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-
+use Illuminate\Database\Eloquent\Builder;
 use Carbon\Carbon;
 
 class TaskAMY extends Model
@@ -41,146 +39,86 @@ class TaskAMY extends Model
         'is_archived'   => 'boolean',
     ];
 
-    protected $attributes = [
-        'status'         => 'pending',
-        'priority'       => 'medium',
-        'reminder_sent'  => false,
-        'is_archived'    => false,
-    ];
-
     // -----------------------------------------------------------------------
     // RELATIONSHIPS
     // -----------------------------------------------------------------------
 
-    /**
-     * User who created task
-     */
+    /** Task belongs to the user who created it */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    /**
-     * Assigned user
-     */
+    /** Task belongs to the assigned user (nullable) */
     public function assignee(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to');
     }
 
-    /**
-     * Task category
-     */
+    /** Task belongs to one category */
     public function category(): BelongsTo
     {
         return $this->belongsTo(CategoryAMY::class, 'category_id');
     }
 
-    /**
-     * Task comments
-     */
+    /** Task has many comments */
     public function comments(): HasMany
     {
-        return $this->hasMany(TaskCommentAMY::class, 'task_id')
-                    ->latest();
-    }
-
-    /**
-     * Task reminders
-     */
-    public function reminders(): HasMany
-    {
-        return $this->hasMany(DeadlineReminderAMY::class, 'task_id');
-    }
-
-    /**
-     * Priority relationship
-     * tasks.priority -> priorities.name
-     */
-    public function priorityData(): BelongsTo
-    {
-        return $this->belongsTo(PriorityAMY::class, 'priority', 'name');
+        return $this->hasMany(TaskCommentAMY::class, 'task_id')->latest();
     }
 
     // -----------------------------------------------------------------------
     // QUERY SCOPES
     // -----------------------------------------------------------------------
 
-    /**
-     * Filter by status
-     */
+    /** Filter by status */
     public function scopeWithStatus(Builder $query, string $status): Builder
     {
         return $query->where('status', $status);
     }
 
-    /**
-     * Filter by priority
-     */
+    /** Filter by priority */
     public function scopeWithPriority(Builder $query, string $priority): Builder
     {
         return $query->where('priority', $priority);
     }
 
-    /**
-     * Assigned tasks
-     */
+    /** Tasks assigned to a specific user */
     public function scopeAssignedTo(Builder $query, int $userId): Builder
     {
         return $query->where('assigned_to', $userId);
     }
 
-    /**
-     * Created tasks
-     */
+    /** Tasks created by a specific user */
     public function scopeCreatedBy(Builder $query, int $userId): Builder
     {
         return $query->where('created_by', $userId);
     }
 
-    /**
-     * Active tasks
-     */
+    /** Tasks that are overdue (past due_date and not completed) */
+    public function scopeOverdue(Builder $query): Builder
+    {
+        return $query->where('due_date', '<', Carbon::today())
+                     ->whereNotIn('status', ['completed', 'cancelled']);
+    }
+
+    /** Tasks due within the next N days */
+    public function scopeDueSoon(Builder $query, int $days = 3): Builder
+    {
+        return $query->whereBetween('due_date', [Carbon::today(), Carbon::today()->addDays($days)])
+                     ->whereNotIn('status', ['completed', 'cancelled']);
+    }
+
+    /** Only active (non-archived) tasks */
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_archived', false);
     }
 
-    /**
-     * Completed tasks
-     */
-    public function scopeCompleted(Builder $query): Builder
-    {
-        return $query->where('status', 'completed');
-    }
-
-    /**
-     * Overdue tasks
-     */
-    public function scopeOverdue(Builder $query): Builder
-    {
-        return $query->whereDate('due_date', '<', Carbon::today())
-                     ->whereNotIn('status', ['completed', 'cancelled']);
-    }
-
-    /**
-     * Tasks due soon
-     */
-    public function scopeDueSoon(Builder $query, int $days = 3): Builder
-    {
-        return $query->whereBetween('due_date', [
-                        Carbon::today(),
-                        Carbon::today()->addDays($days)
-                    ])
-                    ->whereNotIn('status', ['completed', 'cancelled']);
-    }
-
-    /**
-     * Pending reminders
-     */
+    /** Pending reminder tasks (due tomorrow, reminder not sent) */
     public function scopePendingReminder(Builder $query): Builder
     {
-        return $query->whereDate('due_date', Carbon::tomorrow())
+        return $query->where('due_date', Carbon::tomorrow())
                      ->where('reminder_sent', false)
                      ->whereNotIn('status', ['completed', 'cancelled']);
     }
@@ -189,9 +127,7 @@ class TaskAMY extends Model
     // ACCESSORS
     // -----------------------------------------------------------------------
 
-    /**
-     * Human-readable status
-     */
+    /** Human-readable status label */
     public function getStatusLabelAttribute(): string
     {
         return match ($this->status) {
@@ -203,17 +139,13 @@ class TaskAMY extends Model
         };
     }
 
-    /**
-     * Human-readable priority
-     */
+    /** Human-readable priority label */
     public function getPriorityLabelAttribute(): string
     {
         return ucfirst($this->priority);
     }
 
-    /**
-     * Status badge classes
-     */
+    /** Tailwind CSS classes for status badge */
     public function getStatusColorAttribute(): string
     {
         return match ($this->status) {
@@ -225,9 +157,7 @@ class TaskAMY extends Model
         };
     }
 
-    /**
-     * Priority badge classes
-     */
+    /** Tailwind CSS classes for priority badge */
     public function getPriorityColorAttribute(): string
     {
         return match ($this->priority) {
@@ -239,9 +169,7 @@ class TaskAMY extends Model
         };
     }
 
-    /**
-     * Is overdue?
-     */
+    /** Is this task overdue? */
     public function getIsOverdueAttribute(): bool
     {
         return $this->due_date
@@ -249,62 +177,34 @@ class TaskAMY extends Model
             && !in_array($this->status, ['completed', 'cancelled']);
     }
 
-    /**
-     * Days remaining
-     */
+    /** Days remaining until due date (negative = overdue) */
     public function getDaysRemainingAttribute(): ?int
     {
         return $this->due_date
-            ? Carbon::today()->diffInDays($this->due_date, false)
+            ? (int) Carbon::today()->diffInDays($this->due_date, false)
             : null;
-    }
-
-    /**
-     * Completion percentage
-     */
-    public function getProgressPercentageAttribute(): int
-    {
-        return match ($this->status) {
-            'pending'     => 0,
-            'in_progress' => 50,
-            'completed'   => 100,
-            'cancelled'   => 0,
-            default       => 0,
-        };
     }
 
     // -----------------------------------------------------------------------
     // MUTATORS
     // -----------------------------------------------------------------------
 
-    /**
-     * Format title
-     */
+    /** Auto-capitalize title */
     public function setTitleAttribute(string $value): void
     {
-        $this->attributes['title'] = ucwords(
-            strtolower(trim($value))
-        );
+        $this->attributes['title'] = ucwords(strtolower(trim($value)));
     }
 
-    /**
-     * Auto timestamps from status
-     */
+    /** Set completed_at automatically when status becomes 'completed' */
     public function setStatusAttribute(string $value): void
     {
         $this->attributes['status'] = $value;
 
-        if (
-            $value === 'completed'
-            && empty($this->attributes['completed_at'])
-        ) {
+        if ($value === 'completed' && is_null($this->completed_at)) {
             $this->attributes['completed_at'] = now();
         }
 
-        if (
-            $value === 'in_progress'
-            && empty($this->attributes['started_at'])
-        ) {
+        if ($value === 'in_progress' && is_null($this->started_at)) {
             $this->attributes['started_at'] = now();
         }
     }
