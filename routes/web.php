@@ -2,10 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Controllers - Breeze default
-use App\Http\Controllers\ProfileController;
-
-// Controllers - Project specific
+// Controllers
 use App\Http\Controllers\DashboardControllerAMY;
 use App\Http\Controllers\TaskControllerAMY;
 use App\Http\Controllers\CategoryControllerAMY;
@@ -14,11 +11,16 @@ use App\Http\Controllers\AdminControllerAMY;
 use App\Http\Controllers\ProfileControllerAMY;
 
 // -----------------------------------------------------------------------
-// PUBLIC ROUTES
+// PUBLIC ROUTE
 // -----------------------------------------------------------------------
 Route::get('/', function () {
     return view('welcome');
 });
+
+// -----------------------------------------------------------------------
+// AUTH ROUTES
+// -----------------------------------------------------------------------
+require __DIR__.'/auth.php';
 
 // -----------------------------------------------------------------------
 // AUTHENTICATED ROUTES
@@ -27,8 +29,8 @@ Route::middleware(['auth'])->group(function () {
 
     // ---------------- DASHBOARD ----------------
     Route::get('/dashboard', [DashboardControllerAMY::class, 'index'])
-        ->name('dashboard');
-
+    ->middleware(['auth'])
+    ->name('dashboard');
     // ---------------- PROFILE ----------------
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/',    [ProfileControllerAMY::class, 'edit'])->name('edit');
@@ -40,23 +42,19 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('tasks')->name('tasks.')->group(function () {
 
         Route::get('/', [TaskControllerAMY::class, 'index'])->name('index');
-
         Route::get('/create', [TaskControllerAMY::class, 'create'])->name('create');
         Route::post('/', [TaskControllerAMY::class, 'store'])->name('store');
 
         Route::get('/{task}', [TaskControllerAMY::class, 'show'])->name('show');
-
         Route::get('/{task}/edit', [TaskControllerAMY::class, 'edit'])->name('edit');
         Route::put('/{task}', [TaskControllerAMY::class, 'update'])->name('update');
-
         Route::delete('/{task}', [TaskControllerAMY::class, 'destroy'])->name('destroy');
 
-        // Extra actions
         Route::patch('{task}/status',  [TaskControllerAMY::class, 'updateStatus'])->name('status');
         Route::patch('{task}/assign',  [TaskControllerAMY::class, 'assign'])->name('assign');
         Route::patch('{task}/archive', [TaskControllerAMY::class, 'archive'])->name('archive');
 
-        // Comments
+        // COMMENTS
         Route::prefix('{task}/comments')->name('comments.')->group(function () {
             Route::post('/', [TaskCommentControllerAMY::class, 'store'])->name('store');
             Route::delete('{comment}', [TaskCommentControllerAMY::class, 'destroy'])->name('destroy');
@@ -67,36 +65,37 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('categories', CategoryControllerAMY::class)
         ->middleware(['role:admin,team_member']);
 
-    // ---------------- ADMIN ----------------
+    // -------------------------------------------------------------------
+    // ADMIN (CLEAN SINGLE GROUP - FIXED)
+    // -------------------------------------------------------------------
     Route::prefix('admin')
         ->name('admin.')
         ->middleware(['auth', 'role:admin'])
         ->group(function () {
 
-            Route::get('/', [AdminControllerAMY::class, 'index'])->name('index');
+            Route::get('/', [AdminControllerAMY::class, 'index'])
+                ->name('index');
 
-            Route::get('users', [AdminControllerAMY::class, 'users'])->name('users');
-            Route::patch('users/{user}/role', [AdminControllerAMY::class, 'updateRole'])->name('users.role');
-            Route::patch('users/{user}/toggle', [AdminControllerAMY::class, 'toggleActive'])->name('users.toggle');
+            Route::get('/users', [AdminControllerAMY::class, 'users'])
+                ->name('users');
 
-            Route::get('reports', [AdminControllerAMY::class, 'reports'])->name('reports');
-            Route::get('activity-log', [AdminControllerAMY::class, 'activityLog'])->name('activity-log');
+            Route::patch('/users/{user}/role', [AdminControllerAMY::class, 'updateRole'])
+                ->name('users.role');
 
-            // ✅ ADMIN TASK ROUTES (THIS FIXES YOUR /admin/tasks/create 404)
-            Route::get('tasks/create', [TaskControllerAMY::class, 'create'])->name('tasks.create');
-            Route::post('tasks', [TaskControllerAMY::class, 'store'])->name('tasks.store');
+            Route::patch('/users/{user}/toggle', [AdminControllerAMY::class, 'toggleActive'])
+                ->name('users.toggle');
+
+            Route::get('/reports', [AdminControllerAMY::class, 'reports'])
+                ->name('reports');
+
+            Route::get('/activity-log', [AdminControllerAMY::class, 'activityLog'])
+                ->name('activity');
         });
 });
 
-Route::get('/tasks/create', [TaskControllerAMY::class, 'create'])->name('tasks.create');
 // -----------------------------------------------------------------------
 // FALLBACK
 // -----------------------------------------------------------------------
 Route::fallback(function () {
     return response()->view('errors.404', [], 404);
 });
-
-// -----------------------------------------------------------------------
-// AUTH ROUTES
-// -----------------------------------------------------------------------
-require __DIR__.'/auth.php';

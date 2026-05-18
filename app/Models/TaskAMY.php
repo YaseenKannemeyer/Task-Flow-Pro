@@ -83,6 +83,8 @@ class TaskAMY extends Model
         return $query->where('priority', $priority);
     }
 
+    
+
     /** Tasks assigned to a specific user */
     public function scopeAssignedTo(Builder $query, int $userId): Builder
     {

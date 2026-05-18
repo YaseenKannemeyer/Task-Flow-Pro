@@ -1,4 +1,5 @@
 <aside class="w-64 min-h-screen bg-white border-r border-gray-200 p-4 flex flex-col gap-1">
+    <p class="px-3 text-xs text-gray-400 uppercase tracking-wider mb-1">Admin</p>
     <a href="{{ route('dashboard') }}"
        class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
               {{ request()->routeIs('dashboard') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50' }}">
@@ -11,7 +12,7 @@
 
     <a href="{{ route('tasks.index') }}"
        class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
-              {{ request()->routeIs('tasks.*') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50' }}">
+              {{ request()->routeIs('tasks.index') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50' }}">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
         </svg>
@@ -44,7 +45,7 @@
 
     @can('access-admin')
         <hr class="my-2 border-gray-200">
-        <p class="px-3 text-xs text-gray-400 uppercase tracking-wider mb-1">Admin</p>
+        
         <a href="{{ route('admin.users') }}"
            class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

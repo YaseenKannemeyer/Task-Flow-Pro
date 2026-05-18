@@ -23,23 +23,26 @@ class AdminControllerAMY extends Controller
     }
 
     /** GET /admin — Admin dashboard with summary stats */
-    public function index(): View
-    {
-        $stats = [
-            'total_tasks'     => TaskAMY::count(),
-            'pending'         => TaskAMY::withStatus('pending')->count(),
-            'in_progress'     => TaskAMY::withStatus('in_progress')->count(),
-            'completed'       => TaskAMY::withStatus('completed')->count(),
-            'overdue'         => TaskAMY::overdue()->count(),
-            'total_users'     => User::count(),
-            'active_users'    => User::where('is_active', true)->count(),
-            'total_categories'=> CategoryAMY::count(),
-        ];
+    public function index()
+{
+    $stats = [
+        'total_tasks'      => TaskAMY::count(),
+        'pending'          => TaskAMY::where('status', 'pending')->count(),
+        'in_progress'      => TaskAMY::where('status', 'in_progress')->count(),
+        'completed'        => TaskAMY::where('status', 'completed')->count(),
+        'overdue'          => TaskAMY::overdue()->count(),
+        'total_users'      => User::count(),
+        'active_users'     => User::where('is_active', 1)->count(),
+        'total_categories' => CategoryAMY::count(),
+    ];
 
-        $recentTasks = TaskAMY::with(['creator', 'assignee'])->latest()->limit(10)->get();
+    $recentTasks = TaskAMY::with(['creator', 'assignee'])
+        ->latest()
+        ->limit(10)
+        ->get();
 
-        return view('admin.index', compact('stats', 'recentTasks'));
-    }
+    return view('admin.index', compact('stats', 'recentTasks'));
+}
 
     /** GET /admin/users */
     public function users(): View

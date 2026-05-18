@@ -11,6 +11,7 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
+    
     use HasFactory, Notifiable;
 
     protected $fillable = [
@@ -50,6 +51,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(TaskCommentAMY::class, 'user_id');
     }
+    
 
     // -----------------------------------------------------------------------
     // ROLE HELPERS
@@ -79,26 +81,5 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $parts = explode(' ', $this->name);
         return strtoupper(substr($parts[0], 0, 1) . (substr($parts[1] ?? '', 0, 1)));
-    }
-}
-
-
-// =============================================================================
-// FILE: app/Models/RoleAMY.php
-// =============================================================================
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-
-class RoleAMY extends Model
-{
-    protected $table = 'roles';
-
-    protected $fillable = ['name', 'display_name', 'description'];
-
-    public function users(): HasMany
-    {
-        return $this->hasMany(User::class, 'role_id');
     }
 }
