@@ -3,63 +3,47 @@
 namespace App\Http\Controllers;
 
 use App\Models\TaskAMY;
+use App\Models\User;
+use App\Models\CategoryAMY;
 use Illuminate\Http\Request;
 
 class TaskAMYController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct()
     {
-        //
+        $this->authorizeResource(TaskAMY::class, 'taskAMY');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    // SHOW CREATE FORM (ADMIN CAN ACCESS BECAUSE POLICY ALLOWS)
     public function create()
     {
-        //
+        return view('tasks.create', [
+            'users' => User::all(),
+            'categories' => CategoryAMY::all(),
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // STORE TASK
     public function store(Request $request)
     {
-        //
-    }
+        $this->authorize('create', TaskAMY::class);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(TaskAMY $taskAMY)
-    {
-        //
-    }
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'status' => ['required', 'in:pending,in_progress,completed'],
+            'priority' => ['required', 'in:low,medium,high,critical'],
+            'category_id' => ['nullable', 'exists:categories,id'],
+            'assigned_to' => ['nullable', 'exists:users,id'],
+            'due_date' => ['nullable', 'date'],
+        ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(TaskAMY $taskAMY)
-    {
-        //
-    }
+        $validated['created_by'] = auth()->id();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, TaskAMY $taskAMY)
-    {
-        //
-    }
+        TaskAMY::create($validated);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(TaskAMY $taskAMY)
-    {
-        //
+        return redirect()
+            ->route('tasks.index')
+            ->with('success', 'Task created successfully.');
     }
 }

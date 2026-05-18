@@ -1,9 +1,5 @@
 <?php
 
-// =============================================================================
-// FILE: routes/web.php
-// =============================================================================
-
 use Illuminate\Support\Facades\Route;
 
 // Controllers - Breeze default
@@ -19,91 +15,88 @@ use App\Http\Controllers\ProfileControllerAMY;
 
 // -----------------------------------------------------------------------
 // PUBLIC ROUTES
-// Welcome page (no auth needed)
 // -----------------------------------------------------------------------
 Route::get('/', function () {
     return view('welcome');
 });
 
 // -----------------------------------------------------------------------
-// AUTHENTICATED + VERIFIED ROUTES
+// AUTHENTICATED ROUTES
 // -----------------------------------------------------------------------
 Route::middleware(['auth'])->group(function () {
 
-    // Dashboard
-    Route::get('/dashboard', [DashboardControllerAMY::class, 'index'])->name('dashboard');
+    // ---------------- DASHBOARD ----------------
+    Route::get('/dashboard', [DashboardControllerAMY::class, 'index'])
+        ->name('dashboard');
 
-    // ------------------------------------------------------------------
-    // PROFILE ROUTES
-    // Uses your AMY profile controller (replaces the Breeze default below)
-    // ------------------------------------------------------------------
+    // ---------------- PROFILE ----------------
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/',    [ProfileControllerAMY::class, 'edit'])->name('edit');
         Route::patch('/',  [ProfileControllerAMY::class, 'update'])->name('update');
         Route::delete('/', [ProfileControllerAMY::class, 'destroy'])->name('destroy');
     });
 
-    // ------------------------------------------------------------------
-    // TASK ROUTES
-    // ------------------------------------------------------------------
+    // ---------------- TASKS ----------------
     Route::prefix('tasks')->name('tasks.')->group(function () {
 
-        // Standard REST routes (create, store, show, edit, update, destroy)
-        Route::resource('/', TaskControllerAMY::class)
-             ->parameters(['' => 'task'])
-             ->except(['index']);
-
-        // Index handled separately so we can add filtering logic
         Route::get('/', [TaskControllerAMY::class, 'index'])->name('index');
 
-        // Extra task actions
+        Route::get('/create', [TaskControllerAMY::class, 'create'])->name('create');
+        Route::post('/', [TaskControllerAMY::class, 'store'])->name('store');
+
+        Route::get('/{task}', [TaskControllerAMY::class, 'show'])->name('show');
+
+        Route::get('/{task}/edit', [TaskControllerAMY::class, 'edit'])->name('edit');
+        Route::put('/{task}', [TaskControllerAMY::class, 'update'])->name('update');
+
+        Route::delete('/{task}', [TaskControllerAMY::class, 'destroy'])->name('destroy');
+
+        // Extra actions
         Route::patch('{task}/status',  [TaskControllerAMY::class, 'updateStatus'])->name('status');
         Route::patch('{task}/assign',  [TaskControllerAMY::class, 'assign'])->name('assign');
         Route::patch('{task}/archive', [TaskControllerAMY::class, 'archive'])->name('archive');
 
-        // Nested comments under a task
+        // Comments
         Route::prefix('{task}/comments')->name('comments.')->group(function () {
-            Route::post('/',           [TaskCommentControllerAMY::class, 'store'])->name('store');
+            Route::post('/', [TaskCommentControllerAMY::class, 'store'])->name('store');
             Route::delete('{comment}', [TaskCommentControllerAMY::class, 'destroy'])->name('destroy');
         });
     });
 
-    // ------------------------------------------------------------------
-    // CATEGORY ROUTES (admin + team_member only)
-    // ------------------------------------------------------------------
+    // ---------------- CATEGORIES ----------------
     Route::resource('categories', CategoryControllerAMY::class)
-         ->middleware('role:admin,team_member')
-         ->names([
-             'index'   => 'categories.index',
-             'create'  => 'categories.create',
-             'store'   => 'categories.store',
-             'show'    => 'categories.show',
-             'edit'    => 'categories.edit',
-             'update'  => 'categories.update',
-             'destroy' => 'categories.destroy',
-         ]);
+        ->middleware(['role:admin,team_member']);
 
-    // ------------------------------------------------------------------
-    // ADMIN ROUTES (admin only)
-    // ------------------------------------------------------------------
-    Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function () {
-        Route::get('/',                   [AdminControllerAMY::class, 'index'])->name('index');
-        Route::get('users',               [AdminControllerAMY::class, 'users'])->name('users');
-        Route::patch('users/{user}/role', [AdminControllerAMY::class, 'updateRole'])->name('users.role');
-        Route::patch('users/{user}/toggle', [AdminControllerAMY::class, 'toggleActive'])->name('users.toggle');
-        Route::get('reports',             [AdminControllerAMY::class, 'reports'])->name('reports');
-        Route::get('activity-log',        [AdminControllerAMY::class, 'activityLog'])->name('activity-log');
-    });
+    // ---------------- ADMIN ----------------
+    Route::prefix('admin')
+        ->name('admin.')
+        ->middleware(['auth', 'role:admin'])
+        ->group(function () {
+
+            Route::get('/', [AdminControllerAMY::class, 'index'])->name('index');
+
+            Route::get('users', [AdminControllerAMY::class, 'users'])->name('users');
+            Route::patch('users/{user}/role', [AdminControllerAMY::class, 'updateRole'])->name('users.role');
+            Route::patch('users/{user}/toggle', [AdminControllerAMY::class, 'toggleActive'])->name('users.toggle');
+
+            Route::get('reports', [AdminControllerAMY::class, 'reports'])->name('reports');
+            Route::get('activity-log', [AdminControllerAMY::class, 'activityLog'])->name('activity-log');
+
+            // ✅ ADMIN TASK ROUTES (THIS FIXES YOUR /admin/tasks/create 404)
+            Route::get('tasks/create', [TaskControllerAMY::class, 'create'])->name('tasks.create');
+            Route::post('tasks', [TaskControllerAMY::class, 'store'])->name('tasks.store');
+        });
 });
 
+Route::get('/tasks/create', [TaskControllerAMY::class, 'create'])->name('tasks.create');
 // -----------------------------------------------------------------------
-// FALLBACK — catches any URL that doesn't match a route
+// FALLBACK
 // -----------------------------------------------------------------------
 Route::fallback(function () {
     return response()->view('errors.404', [], 404);
 });
 
 // -----------------------------------------------------------------------
-// Breeze auth routes (login, register, password reset, etc.)
+// AUTH ROUTES
 // -----------------------------------------------------------------------
 require __DIR__.'/auth.php';

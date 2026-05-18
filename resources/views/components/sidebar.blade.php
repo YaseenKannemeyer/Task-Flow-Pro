@@ -27,6 +27,19 @@
             </svg>
             Categories
         </a>
+
+        
+    @endcan
+
+    @can('manage-tasks')
+        <a href="{{ route('tasks.create') }}"
+           class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
+                  {{ request()->routeIs('tasks.create') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50' }}">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Create Task
+        </a>
     @endcan
 
     @can('access-admin')

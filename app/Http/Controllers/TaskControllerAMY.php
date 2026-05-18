@@ -17,9 +17,11 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TaskControllerAMY extends Controller
 {
+        use AuthorizesRequests;
     /**
      * Constructor: dependency injection of TaskService.
      * Authorization via policy is applied per-method.

@@ -4,7 +4,7 @@
 <div class="max-w-2xl mx-auto">
     <h1 class="text-2xl font-bold text-gray-900 mb-6">Create Task</h1>
 
-    <form method="POST" action="{{ route('tasks.store') }}" class="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
+    <form method="POST" action="{{ route('tasks.store') }}"  class="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
         @csrf
 
         {{-- Title --}}
