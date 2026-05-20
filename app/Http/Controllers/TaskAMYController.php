@@ -46,4 +46,13 @@ class TaskAMYController extends Controller
             ->route('tasks.index')
             ->with('success', 'Task created successfully.');
     }
+
+    public function calendar(): View
+{
+    $tasks = TaskAMY::with(['assignee', 'creator', 'category'])
+        ->whereNotNull('due_date')
+        ->get();
+
+    return view('tasks.calendar', compact('tasks'));
+}
 }

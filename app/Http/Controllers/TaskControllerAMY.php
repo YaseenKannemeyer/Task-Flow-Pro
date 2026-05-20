@@ -185,5 +185,15 @@ public function assigned(Request $request): View
 
     return view('tasks.assigned', compact('tasks'));
 }
+
+public function calendar(): View
+{
+    $tasks = TaskAMY::with(['assignee', 'creator', 'category'])
+        ->whereNotNull('due_date')
+        ->get();
+
+    return view('tasks.calendar', compact('tasks'));
+}
+
 }
 

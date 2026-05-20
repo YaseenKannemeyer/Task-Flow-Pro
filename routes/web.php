@@ -41,28 +41,30 @@ Route::middleware(['auth'])->group(function () {
     // ---------------- TASKS ----------------
     Route::prefix('tasks')->name('tasks.')->group(function () {
 
-        Route::get('/', [TaskControllerAMY::class, 'index'])->name('index');
-        Route::get('/create', [TaskControllerAMY::class, 'create'])->name('create');
-        Route::post('/', [TaskControllerAMY::class, 'store'])->name('store');
-        Route::get('/assigned', [TaskControllerAMY::class, 'assigned'])
-    ->name('assigned');
-    
+    Route::get('/', [TaskControllerAMY::class, 'index'])->name('index');
+    Route::get('/create', [TaskControllerAMY::class, 'create'])->name('create');
+    Route::post('/', [TaskControllerAMY::class, 'store'])->name('store');
 
-        Route::get('/{task}', [TaskControllerAMY::class, 'show'])->name('show');
-        Route::get('/{task}/edit', [TaskControllerAMY::class, 'edit'])->name('edit');
-        Route::put('/{task}', [TaskControllerAMY::class, 'update'])->name('update');
-        Route::delete('/{task}', [TaskControllerAMY::class, 'destroy'])->name('destroy');
+    Route::get('/assigned', [TaskControllerAMY::class, 'assigned'])->name('assigned');
 
-        Route::patch('{task}/status',  [TaskControllerAMY::class, 'updateStatus'])->name('status');
-        Route::patch('{task}/assign',  [TaskControllerAMY::class, 'assign'])->name('assign');
-        Route::patch('{task}/archive', [TaskControllerAMY::class, 'archive'])->name('archive');
+    // ✅ FIXED CALENDAR ROUTE
+    Route::get('/calendar', [TaskControllerAMY::class, 'calendar'])
+        ->name('calendar');
 
-        // COMMENTS
-        Route::prefix('{task}/comments')->name('comments.')->group(function () {
-            Route::post('/', [TaskCommentControllerAMY::class, 'store'])->name('store');
-            Route::delete('{comment}', [TaskCommentControllerAMY::class, 'destroy'])->name('destroy');
-        });
+    Route::get('/{task}', [TaskControllerAMY::class, 'show'])->name('show');
+    Route::get('/{task}/edit', [TaskControllerAMY::class, 'edit'])->name('edit');
+    Route::put('/{task}', [TaskControllerAMY::class, 'update'])->name('update');
+    Route::delete('/{task}', [TaskControllerAMY::class, 'destroy'])->name('destroy');
+
+    Route::patch('{task}/status', [TaskControllerAMY::class, 'updateStatus'])->name('status');
+    Route::patch('{task}/assign', [TaskControllerAMY::class, 'assign'])->name('assign');
+    Route::patch('{task}/archive', [TaskControllerAMY::class, 'archive'])->name('archive');
+
+    Route::prefix('{task}/comments')->name('comments.')->group(function () {
+        Route::post('/', [TaskCommentControllerAMY::class, 'store'])->name('store');
+        Route::delete('{comment}', [TaskCommentControllerAMY::class, 'destroy'])->name('destroy');
     });
+});
 
     // ---------------- CATEGORIES ----------------
     Route::resource('categories', CategoryControllerAMY::class)

@@ -15,15 +15,23 @@
     {{-- Right Section: Actions & User Meta --}}
     <div class="flex items-center gap-4">
         
-        <a href="{{ route('tasks.assigned') }}"
-   class="relative p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-all duration-200">
+      <a href="{{ route('tasks.assigned') }}"
+   class="relative flex items-center gap-2 px-3 py-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-all duration-200">
 
-    <span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-blue-500 ring-2 ring-white"></span>
+    <!-- Notification dot -->
+    <span class="absolute top-2.5 left-7 w-2 h-2 rounded-full bg-blue-500 ring-2 ring-white"></span>
 
+    <!-- Icon -->
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round"
             d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.437L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
     </svg>
+
+    <!-- Label -->
+    <span class="text-sm font-medium">
+        My Tasks
+    </span>
+
 </a>
 
         {{-- Vertical Visual Divider --}}
