@@ -7,16 +7,21 @@ This is a friendly reminder that the following task is due **tomorrow ({{ $dueDa
 
 @component('mail::panel')
 **{{ $task->title }}**
+
 Priority: {{ $task->priority_label }}
+
 Status: {{ $task->status_label }}
 @endcomponent
 
 Please ensure the task is updated or completed before the deadline.
 
-@component('mail::button', ['url' => route('tasks.show', $task), 'color' => 'primary'])
+@component('mail::button', [
+    'url' => url(route('tasks.show', $task->id)),
+    'color' => 'primary'
+])
 View Task
 @endcomponent
 
-Thanks,
+Thanks,  
 {{ config('app.name') }}
 @endcomponent

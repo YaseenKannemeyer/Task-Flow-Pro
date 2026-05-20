@@ -1,47 +1,76 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+    <form method="POST" action="{{ route('register') }}" class="space-y-4">
         @csrf
 
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" value="Full Name" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" required />
-        </div>
+        {{-- Card wrapper feel --}}
+        <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
 
-        <!-- Email -->
-        <div class="mt-4">
-            <x-input-label for="email" value="Email Address" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" required />
-        </div>
+            {{-- Title --}}
+            <h2 class="text-xl font-bold text-slate-900 mb-1">Create Account</h2>
+            <p class="text-sm text-slate-500 mb-6">Join TaskFlow Pro and start managing tasks</p>
 
-        <!-- Role (TEMP ADMIN OPTION) -->
-<div class="mt-4">
-    <x-input-label for="role_id" value="Role" />
-    <select name="role_id" class="block mt-1 w-full border-gray-300 rounded">
+            <!-- Name -->
+            <div>
+                <x-input-label for="name" value="Full Name" class="text-slate-700" />
+                <x-text-input id="name"
+                    name="name"
+                    type="text"
+                    required
+                    class="block mt-1 w-full rounded-xl border-slate-200 focus:border-blue-500 focus:ring-blue-500 shadow-sm" />
+            </div>
 
-        <option value="1">Admin (TEMP)</option>
-        <option value="2">Member</option>
-        <option value="3">Guest</option>
+            <!-- Email -->
+            <div class="mt-4">
+                <x-input-label for="email" value="Email Address" class="text-slate-700" />
+                <x-text-input id="email"
+                    name="email"
+                    type="email"
+                    required
+                    class="block mt-1 w-full rounded-xl border-slate-200 focus:border-blue-500 focus:ring-blue-500 shadow-sm" />
+            </div>
 
-    </select>
-</div>
+            <!-- Role -->
+            <div class="mt-4">
+                <x-input-label for="role_id" value="Role" class="text-slate-700" />
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" value="Password" />
-            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required />
-        </div>
+                <select name="role_id"
+                    class="block mt-1 w-full rounded-xl border-slate-200 text-slate-700 focus:border-blue-500 focus:ring-blue-500 shadow-sm">
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" value="Confirm Password" />
-            <x-text-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required />
-        </div>
+                    <!-- <option value="1">Admin (TEMP)</option> -->
+                    <option value="2">Member</option>
+                    <option value="3">Guest</option>
 
-        <div class="mt-4">
-            <x-primary-button>
-                Register
-            </x-primary-button>
+                </select>
+            </div>
+
+            <!-- Password -->
+            <div class="mt-4">
+                <x-input-label for="password" value="Password" class="text-slate-700" />
+                <x-text-input id="password"
+                    name="password"
+                    type="password"
+                    required
+                    class="block mt-1 w-full rounded-xl border-slate-200 focus:border-blue-500 focus:ring-blue-500 shadow-sm" />
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mt-4">
+                <x-input-label for="password_confirmation" value="Confirm Password" class="text-slate-700" />
+                <x-text-input id="password_confirmation"
+                    name="password_confirmation"
+                    type="password"
+                    required
+                    class="block mt-1 w-full rounded-xl border-slate-200 focus:border-blue-500 focus:ring-blue-500 shadow-sm" />
+            </div>
+
+            <!-- Button -->
+            <div class="mt-6">
+                <x-primary-button
+                    class="w-full justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl shadow-sm transition">
+                    Register
+                </x-primary-button>
+            </div>
+
         </div>
     </form>
 </x-guest-layout>

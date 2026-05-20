@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'TaskFlow') }} — @yield('title', 'Dashboard')</title>
+    <title>{{ config('app.name', 'TaskFlow Pro') }} — @yield('title', 'Dashboard')</title>
     {{-- Vite-compiled CSS/JS (no inline styles) --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')

@@ -173,5 +173,17 @@ class TaskControllerAMY extends Controller
         $msg = $task->is_archived ? 'Task archived.' : 'Task unarchived.';
         return back()->with('success', $msg);
     }
+    /** GET /tasks/assigned — Tasks assigned to the logged-in user */
+public function assigned(Request $request): View
+{
+    $user = Auth::user();
+
+    $tasks = TaskAMY::with(['assignee', 'creator', 'category'])
+        ->where('assigned_to', $user->id)
+        ->latest()
+        ->paginate(15);
+
+    return view('tasks.assigned', compact('tasks'));
+}
 }
 

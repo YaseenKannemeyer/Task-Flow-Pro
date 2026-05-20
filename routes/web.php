@@ -44,6 +44,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [TaskControllerAMY::class, 'index'])->name('index');
         Route::get('/create', [TaskControllerAMY::class, 'create'])->name('create');
         Route::post('/', [TaskControllerAMY::class, 'store'])->name('store');
+        Route::get('/assigned', [TaskControllerAMY::class, 'assigned'])
+    ->name('assigned');
+    
 
         Route::get('/{task}', [TaskControllerAMY::class, 'show'])->name('show');
         Route::get('/{task}/edit', [TaskControllerAMY::class, 'edit'])->name('edit');
