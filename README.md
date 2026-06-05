@@ -11,16 +11,15 @@
 
 | Layer | Technology | Version |
 |---|---|---|
-| Backend Framework | Laravel | 13.x |
+| Backend Framework | Laravel | 13.9.0 |
 | Language | PHP | 8.5.4 |
 | Authentication | Laravel Breeze | Latest |
 | Database | MySQL | 8.x |
-| Frontend Styling | Tailwind CSS (CDN) | 3.x |
 | Template Engine | Laravel Blade | Built-in |
 | Queue Driver | Database | Built-in |
 | Mail | SMTP / Mailpit (dev) | Built-in |
 | ORM | Laravel Eloquent | Built-in |
-| Package Manager | Composer | 2.x |
+| Package Manager | Composer | 2.9.5 |
 
 ---
 
